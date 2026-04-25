@@ -9,19 +9,45 @@ const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
 const COUNTDOWN_LABELS: Record<string, string> = {
-  en: "Next chengyu in",
+  en: "Next Chengyu in",
   "zh-Hans": "下个成语",
   "zh-Hant": "下個成語",
 };
 
 function getTimeUntilReset(): string {
   const now = new Date();
-  const target = new Date();
-  target.setUTCHours(18, 0, 0, 0);
-  if (now.getTime() >= target.getTime()) {
-    target.setUTCDate(target.getUTCDate() + 1);
+  const nowPacific = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(now);
+
+  const getPart = (type: string) => nowPacific.find((p) => p.type === type)?.value ?? "0";
+
+  const currentHour = parseInt(getPart("hour"));
+  const ampm = getPart("dayPeriod");
+  const hour24 = ampm === "PM" && currentHour !== 12 ? currentHour + 12 : ampm === "AM" && currentHour === 12 ? 0 : currentHour;
+
+  const pacificNow = new Date(
+    parseInt(getPart("year")),
+    parseInt(getPart("month")) - 1,
+    parseInt(getPart("day")),
+    hour24,
+    parseInt(getPart("minute")),
+    parseInt(getPart("second"))
+  );
+
+  const target = new Date(pacificNow);
+  target.setHours(9, 0, 0, 0);
+  if (pacificNow.getTime() >= target.getTime()) {
+    target.setDate(target.getDate() + 1);
   }
-  const diff = target.getTime() - now.getTime();
+
+  const diff = target.getTime() - pacificNow.getTime();
   const hours = Math.floor(diff / 3600000);
   const minutes = Math.floor((diff % 3600000) / 60000);
   const seconds = Math.floor((diff % 60000) / 1000);
