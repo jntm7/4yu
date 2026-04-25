@@ -2,6 +2,7 @@ import idioms from "../data/idioms.json";
 
 export type Idiom = {
   word: string;
+  wordTraditional: string;
   pinyin: string;
   abbreviation: string;
   explanation: string;

@@ -22,7 +22,8 @@ function App() {
   const [lang, setLang] = useState<Lang>("zh-Hans");
   const idiom = getDailyIdiom();
   const today = new Date();
-  const isSupported = lang === "zh-Hans";
+  const isSupported = lang === "zh-Hans" || lang === "zh-Hant";
+  const displayWord = lang === "zh-Hant" ? idiom.wordTraditional : idiom.word;
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8 text-center">
@@ -54,7 +55,7 @@ function App() {
           <p className="section-label text-center">{SECTION_LABELS.today[lang]}</p>
           <div className="mx-auto mt-2 mb-8 w-42 h-0.5 rounded" style={{ backgroundColor: "var(--color-accent)" }} />
           <div className="idiom-chars flex justify-center gap-2 mb-8">
-            {idiom.word.split("").map((char, i) => {
+            {displayWord.split("").map((char, i) => {
               const syllable = idiom.pinyin.split(/\s+/)[i] ?? "";
               return (
                 <span key={i} className="idiom-char flex flex-col items-center gap-1">
