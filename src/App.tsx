@@ -28,29 +28,31 @@ function App() {
     <main className="flex min-h-screen flex-col items-center p-8 text-center">
       <div className="flex-shrink-0 mt-12">
         <h1 className="text-5xl font-extrabold tracking-tight" style={{ color: "var(--color-accent)" }}>4Yu</h1>
-        <p className="text-lg mt-1" style={{ color: "var(--color-muted)" }}>Daily Chinese Chengyu</p>
+        <p className="text-lg mt-1" style={{ color: "var(--color-muted)" }}>一日一语</p>
 
-        <div className="my-6">
+        <div className="mt-6">
           <FlipDate date={today} lang={lang} />
         </div>
 
-        <div className="lang-toggle">
-          {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
-            <button
-              key={l}
-              className={`lang-toggle-btn ${lang === l ? "lang-toggle-active" : ""}`}
-              onClick={() => setLang(l)}
-            >
-              {LANG_LABELS[l]}
-            </button>
-          ))}
+        <div className="my-8">
+          <div className="lang-toggle">
+            {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
+              <button
+                key={l}
+                className={`lang-toggle-btn ${lang === l ? "lang-toggle-active" : ""}`}
+                onClick={() => setLang(l)}
+              >
+                {LANG_LABELS[l]}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="flex-grow flex items-center justify-center w-full pt-6">
+      <div className="flex items-center justify-center w-full py-6">
         <div className="w-full max-w-xl rounded-2xl p-10 text-left min-h-[420px] flex flex-col shadow-2xl border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-accent)" }}>
           <p className="section-label text-center">{SECTION_LABELS.today[lang]}</p>
-          <div className="mx-auto mt-2 mb-8 w-24 h-0.5 rounded" style={{ backgroundColor: "var(--color-accent)" }} />
+          <div className="mx-auto mt-2 mb-8 w-42 h-0.5 rounded" style={{ backgroundColor: "var(--color-accent)" }} />
           <div className="idiom-chars flex justify-center gap-2 mb-8">
             {idiom.word.split("").map((char, i) => {
               const syllable = idiom.pinyin.split(/\s+/)[i] ?? "";
@@ -101,7 +103,7 @@ function App() {
         </div>
       </div>
 
-      <div className="flex-shrink-0 pb-8">
+      <div className="flex-grow flex-shrink-0 pb-8">
         <p className="text-xs" style={{ color: "var(--color-dim)" }}>Created with ❤️ by jntm7</p>
       </div>
     </main>
