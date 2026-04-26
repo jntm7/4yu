@@ -2,11 +2,18 @@ import idioms from "../data/idioms.json";
 
 export type Idiom = {
   word: string;
+  wordTraditional: string;
   pinyin: string;
   abbreviation: string;
   explanation: string;
+  explanationTraditional: string;
+  explanationEn: string;
   derivation: string;
+  derivationTraditional: string;
+  derivationEn: string | null;
   example: string;
+  exampleTraditional: string;
+  exampleEn: string | null;
   frequency: number;
 };
 
