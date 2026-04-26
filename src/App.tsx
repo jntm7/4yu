@@ -22,7 +22,25 @@ function App() {
   const [lang, setLang] = useState<Lang>("zh-Hans");
   const idiom = getDailyIdiom();
   const today = new Date();
-  const isSupported = lang === "zh-Hans" || lang === "zh-Hant";
+
+  const getExplanation = () => {
+    if (lang === "en") return idiom.explanationEn;
+    if (lang === "zh-Hant") return idiom.explanationTraditional;
+    return idiom.explanation;
+  };
+
+  const getDerivation = () => {
+    if (lang === "en") return idiom.derivationEn;
+    if (lang === "zh-Hant") return idiom.derivationTraditional;
+    return idiom.derivation;
+  };
+
+  const getExample = () => {
+    if (lang === "en") return idiom.exampleEn;
+    if (lang === "zh-Hant") return idiom.exampleTraditional;
+    return idiom.example;
+  };
+
   const displayWord = lang === "zh-Hant" ? idiom.wordTraditional : idiom.word;
 
   return (
@@ -66,46 +84,29 @@ function App() {
             })}
           </div>
 
-          {isSupported ? (
-            <div className="flex-grow space-y-4">
-              <div>
-                <p className="section-label">{SECTION_LABELS.definition[lang]}</p>
-                <p className="text-lg leading-relaxed" style={{ color: "var(--color-text)" }}>{idiom.explanation}</p>
-              </div>
-              {idiom.derivation && (
-                <div>
-                  <p className="section-label">{SECTION_LABELS.origin[lang]}</p>
-                  <p className="text-base leading-relaxed" style={{ color: "var(--color-muted)" }}>{idiom.derivation}</p>
-                </div>
-              )}
-              {idiom.example && (
-                <div>
-                  <p className="section-label">{SECTION_LABELS.example[lang]}</p>
-                  <p className="text-base leading-relaxed" style={{ color: "var(--color-muted)" }}>{idiom.example}</p>
-                </div>
-              )}
+          <div className="flex-grow space-y-4">
+            <div>
+              <p className="section-label">{SECTION_LABELS.definition[lang]}</p>
+              <p className="text-lg leading-relaxed" style={{ color: "var(--color-text)" }}>{getExplanation()}</p>
             </div>
-          ) : (
-            <div className="flex-grow space-y-4">
-              <div>
-                <p className="section-label">{SECTION_LABELS.definition[lang]}</p>
-                <p className="text-base" style={{ color: "var(--color-dim)" }}>Coming soon</p>
-              </div>
+            {getDerivation() && (
               <div>
                 <p className="section-label">{SECTION_LABELS.origin[lang]}</p>
-                <p className="text-base" style={{ color: "var(--color-dim)" }}>Coming soon</p>
+                <p className="text-base leading-relaxed" style={{ color: "var(--color-muted)" }}>{getDerivation()}</p>
               </div>
+            )}
+            {getExample() && (
               <div>
                 <p className="section-label">{SECTION_LABELS.example[lang]}</p>
-                <p className="text-base" style={{ color: "var(--color-dim)" }}>Coming soon</p>
+                <p className="text-base leading-relaxed" style={{ color: "var(--color-muted)" }}>{getExample()}</p>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
       <div className="flex-grow flex-shrink-0 pb-8">
-        <p className="text-xs" style={{ color: "var(--color-dim)" }}>Created with ❤️ by jntm7</p>
+        <p className="text-xs" style={{ color: "var(--color-dim)" }}>Created with ♡ by jntm7</p>
       </div>
     </main>
   );
