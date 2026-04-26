@@ -16,8 +16,8 @@ const COUNTDOWN_LABELS: Record<string, string> = {
 
 function getTimeUntilReset(): string {
   const now = new Date();
-  const nowPacific = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Los_Angeles",
+  const nowMountain = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Denver",
     hour: "numeric",
     minute: "numeric",
     second: "numeric",
@@ -26,13 +26,13 @@ function getTimeUntilReset(): string {
     day: "numeric",
   }).formatToParts(now);
 
-  const getPart = (type: string) => nowPacific.find((p) => p.type === type)?.value ?? "0";
+  const getPart = (type: string) => nowMountain.find((p) => p.type === type)?.value ?? "0";
 
   const currentHour = parseInt(getPart("hour"));
   const ampm = getPart("dayPeriod");
   const hour24 = ampm === "PM" && currentHour !== 12 ? currentHour + 12 : ampm === "AM" && currentHour === 12 ? 0 : currentHour;
 
-  const pacificNow = new Date(
+  const mountainNow = new Date(
     parseInt(getPart("year")),
     parseInt(getPart("month")) - 1,
     parseInt(getPart("day")),
@@ -41,13 +41,11 @@ function getTimeUntilReset(): string {
     parseInt(getPart("second"))
   );
 
-  const target = new Date(pacificNow);
-  target.setHours(9, 0, 0, 0);
-  if (pacificNow.getTime() >= target.getTime()) {
-    target.setDate(target.getDate() + 1);
-  }
+  const target = new Date(mountainNow);
+  target.setDate(target.getDate() + 1);
+  target.setHours(0, 0, 0, 0);
 
-  const diff = target.getTime() - pacificNow.getTime();
+  const diff = target.getTime() - mountainNow.getTime();
   const hours = Math.floor(diff / 3600000);
   const minutes = Math.floor((diff % 3600000) / 60000);
   const seconds = Math.floor((diff % 60000) / 1000);
