@@ -1,5 +1,5 @@
 const { readFileSync, writeFileSync } = require("fs");
-const {dirname, join } = require("path");
+const { dirname, join } = require("path");
 const opencc = require("opencc-js");
 
 const ROOT = join(__dirname, "..");
@@ -14,6 +14,9 @@ const idioms = JSON.parse(readFileSync(inputPath, "utf-8"));
 const enriched = idioms.map((item) => ({
   ...item,
   wordTraditional: converter(item.word),
+  explanationTraditional: converter(item.explanation),
+  derivationTraditional: item.derivation ? converter(item.derivation) : "",
+  exampleTraditional: item.example ? converter(item.example) : "",
 }));
 
 console.log(`Converted ${enriched.length} idioms to traditional Chinese`);

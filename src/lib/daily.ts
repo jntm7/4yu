@@ -6,8 +6,14 @@ export type Idiom = {
   pinyin: string;
   abbreviation: string;
   explanation: string;
+  explanationTraditional: string;
+  explanationEn: string;
   derivation: string;
+  derivationTraditional: string;
+  derivationEn: string | null;
   example: string;
+  exampleTraditional: string;
+  exampleEn: string | null;
   frequency: number;
 };
 
