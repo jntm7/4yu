@@ -51,14 +51,22 @@ function App() {
 
   const getDerivation = () => {
     if (lang === "en") return idiom.derivationEn;
-    if (lang === "zh-Hant") return idiom.derivationTraditional;
-    return idiom.derivation;
+    if (lang === "zh-Hant") {
+      const val = idiom.derivationTraditional;
+      return val === "無" ? null : val;
+    }
+    const val = idiom.derivation;
+    return val === "无" ? null : val;
   };
 
   const getExample = () => {
     if (lang === "en") return idiom.exampleEn;
-    if (lang === "zh-Hant") return idiom.exampleTraditional;
-    return idiom.example;
+    if (lang === "zh-Hant") {
+      const val = idiom.exampleTraditional;
+      return val === "無" ? null : val;
+    }
+    const val = idiom.example;
+    return val === "无" ? null : val;
   };
 
   const displayWord = lang === "zh-Hant" ? idiom.wordTraditional : idiom.word;
