@@ -157,18 +157,31 @@
   }
 
   .idiom-row {
-    grid-template-columns: 88px 1fr 88px;
-    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .idiom-chars {
+    flex: 0 0 100%;
+    justify-content: center;
+  }
+
+  .idiom-audio-stack {
+    order: 1;
+    width: auto;
+    margin-top: 0;
+  }
+
+  .idiom-copy-stack {
+    order: 2;
+    width: auto;
+    margin-top: 0;
   }
 
   .idiom-audio-btn {
     width: 30px;
     height: 30px;
-  }
-
-  .idiom-audio-stack,
-  .idiom-copy-stack {
-    margin-top: 8px;
-    width: 88px;
   }
 }

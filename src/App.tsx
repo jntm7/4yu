@@ -252,7 +252,7 @@ function App() {
             )}
           </div>
 
-          <div className="rounded-2xl p-10 text-left min-h-[420px] flex flex-col shadow-2xl border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-accent)" }}>
+          <div className="rounded-2xl sm:p-10 p-6 text-left min-h-[420px] flex flex-col shadow-2xl border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-accent)" }}>
             <p className="section-label text-center">{SECTION_LABELS[dayKey][lang]}</p>
             <div className="mx-auto mt-2 mb-8 w-42 h-0.5 rounded" style={{ backgroundColor: "var(--color-accent)" }} />
             <div className="idiom-row mb-8">
