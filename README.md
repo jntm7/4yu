@@ -1,6 +1,8 @@
 # 4Yu
 
-4Yu is a daily Chinese idiom (chengyu) explorer. Each day features a new idiom with pinyin, definition, origin, and example usage. Supports English, Simplified Chinese, and Traditional Chinese, with built-in pronunciation and copy-to-clipboard.
+_"Four 语"_, _"For You"_
+
+4Yu is a daily Chinese idiom (成语) explorer. Each day features a new idiom with pinyin, definition, origin, and example usage. Supports English, Simplified Chinese, and Traditional Chinese, with built-in pronunciation and copy-to-clipboard.
 
 ## Tech Stack
 
