@@ -1,18 +1,10 @@
 import { useState, useEffect } from "react";
+import { COUNTDOWN_LABELS, DAYS_I18N, MONTHS_I18N, type Lang } from "../lib/i18n";
 
 interface FlipDateProps {
   date: Date;
-  lang: "en" | "zh-Hans" | "zh-Hant";
+  lang: Lang;
 }
-
-const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-
-const COUNTDOWN_LABELS: Record<string, string> = {
-  en: "Next Chengyu in",
-  "zh-Hans": "下个成语",
-  "zh-Hant": "下個成語",
-};
 
 function getTimeUntilReset(): string {
   const now = new Date();
@@ -62,9 +54,9 @@ export default function FlipDate({ date, lang }: FlipDateProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const dayOfWeek = DAYS[date.getDay()];
+  const dayOfWeek = DAYS_I18N[lang][date.getDay()];
   const dayNum = String(date.getDate()).padStart(2, "0");
-  const month = MONTHS[date.getMonth()];
+  const month = MONTHS_I18N[lang][date.getMonth()];
   const year = String(date.getFullYear());
 
   return (
