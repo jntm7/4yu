@@ -12,14 +12,14 @@ interface BookmarksPanelProps {
 export default function BookmarksPanel({ lang, bookmarks, onSelect, onRemove }: BookmarksPanelProps) {
   if (bookmarks.length === 0) {
     return (
-      <div className="panel">
+      <div className="panel-list">
         <p className="panel-empty">{PANEL_LABELS.bookmarksEmpty[lang]}</p>
       </div>
     );
   }
 
   return (
-    <div className="panel">
+    <div className="panel-list">
       {bookmarks.map((idiom) => {
         const word = lang === "zh-Hant" ? idiom.wordTraditional : idiom.word;
         return (

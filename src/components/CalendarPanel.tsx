@@ -38,7 +38,7 @@ export default function CalendarPanel({ lang, selectedDate, onSelect }: Calendar
   }, []);
 
   return (
-    <div className="panel">
+    <div className="panel-list">
       {groups.map((group) => (
         <div key={`${group.year}-${group.month}`}>
           <p className="panel-month-header">{formatMonthHeader(group.year, group.month, lang)}</p>

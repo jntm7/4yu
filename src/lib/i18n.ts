@@ -54,6 +54,16 @@ export const PANEL_LABELS = {
   },
 } satisfies Record<string, Trilingual>;
 
+export const SETTINGS_LABELS = {
+  settings: { en: "Settings", "zh-Hans": "设置", "zh-Hant": "設定" },
+  language: { en: "Language", "zh-Hans": "语言", "zh-Hant": "語言" },
+  theme: { en: "Theme", "zh-Hans": "主题", "zh-Hant": "主題" },
+  light: { en: "Light", "zh-Hans": "浅色", "zh-Hant": "淺色" },
+  dark: { en: "Dark", "zh-Hans": "深色", "zh-Hant": "深色" },
+  system: { en: "System", "zh-Hans": "跟随系统", "zh-Hant": "跟隨系統" },
+  close: { en: "Close", "zh-Hans": "关闭", "zh-Hant": "關閉" },
+} satisfies Record<string, Trilingual>;
+
 export const COUNTDOWN_LABELS: Trilingual = {
   en: "Next Chengyu in",
   "zh-Hans": "下个成语",

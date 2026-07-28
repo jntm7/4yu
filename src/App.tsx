@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Bookmark, Calendar, Copy, Shuffle, Volume2 } from "lucide-react";
 import { getDailyIdiom, getRandomIdiom, type Idiom } from "./lib/daily";
 import { formatFullDate, isToday, isYesterday, yesterday } from "./lib/dates";
-import { ACTION_LABELS, LANG_LABELS, NAV_LABELS, SECTION_LABELS, type Lang } from "./lib/i18n";
+import { ACTION_LABELS, NAV_LABELS, SECTION_LABELS, type Lang } from "./lib/i18n";
 import { pickBestChineseVoice } from "./lib/speech";
 import { useBookmarks } from "./hooks/useBookmarks";
+import { useTheme } from "./hooks/useTheme";
 import FlipDate from "./components/FlipDate";
 import CalendarPanel from "./components/CalendarPanel";
 import BookmarksPanel from "./components/BookmarksPanel";
+import Drawer from "./components/Drawer";
+import SettingsMenu from "./components/SettingsMenu";
 import "./App.css";
 
 type View =
@@ -26,6 +29,7 @@ function App() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const { bookmarks, isBookmarked, toggle: toggleBookmark, remove: removeBookmark } =
     useBookmarks();
+  const { theme, setTheme } = useTheme();
 
   const isTodayView = view.kind !== "idiom" && (view.kind === "today" || isToday(view.date));
   const displayDate = view.kind === "date" ? view.date : new Date();
@@ -152,26 +156,19 @@ function App() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8 text-center">
+      <SettingsMenu
+        lang={lang}
+        onLangChange={setLang}
+        theme={theme}
+        onThemeChange={setTheme}
+      />
+
       <div className="flex-shrink-0 mt-12">
         <h1 className="text-5xl font-extrabold tracking-tight" style={{ color: "var(--color-accent)" }}>4Yu</h1>
         <p className="text-lg mt-1" style={{ color: "var(--color-muted)" }}>一日一语</p>
 
         <div className="mt-6">
           <FlipDate date={displayDate} lang={lang} />
-        </div>
-
-        <div className="my-8">
-          <div className="lang-toggle">
-            {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
-              <button
-                key={l}
-                className={`lang-toggle-btn ${lang === l ? "lang-toggle-active" : ""}`}
-                onClick={() => setLang(l)}
-              >
-                {LANG_LABELS[l]}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -286,29 +283,41 @@ function App() {
             </div>
           </div>
 
-          {panel === "calendar" && (
-            <CalendarPanel
-              lang={lang}
-              selectedDate={view.kind === "date" ? view.date : new Date()}
-              onSelect={(date) => {
-                setView({ kind: "date", date });
-                setPanel("none");
-              }}
-            />
-          )}
-          {panel === "bookmarks" && (
-            <BookmarksPanel
-              lang={lang}
-              bookmarks={bookmarks}
-              onSelect={(selected) => {
-                setView({ kind: "idiom", idiom: selected, source: "bookmark" });
-                setPanel("none");
-              }}
-              onRemove={removeBookmark}
-            />
-          )}
         </div>
       </div>
+
+      <Drawer
+        open={panel === "calendar"}
+        title={NAV_LABELS.browse[lang]}
+        lang={lang}
+        onClose={() => setPanel("none")}
+      >
+        <CalendarPanel
+          lang={lang}
+          selectedDate={view.kind === "date" ? view.date : new Date()}
+          onSelect={(date) => {
+            setView({ kind: "date", date });
+            setPanel("none");
+          }}
+        />
+      </Drawer>
+
+      <Drawer
+        open={panel === "bookmarks"}
+        title={NAV_LABELS.bookmarks[lang]}
+        lang={lang}
+        onClose={() => setPanel("none")}
+      >
+        <BookmarksPanel
+          lang={lang}
+          bookmarks={bookmarks}
+          onSelect={(selected) => {
+            setView({ kind: "idiom", idiom: selected, source: "bookmark" });
+            setPanel("none");
+          }}
+          onRemove={removeBookmark}
+        />
+      </Drawer>
 
       <div className="flex-grow flex-shrink-0 pb-8">
         <p className="text-xs" style={{ color: "var(--color-dim)" }}>Created with ♡ by jntm7</p>
