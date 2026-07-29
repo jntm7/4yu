@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Bookmark, Calendar, Copy, Shuffle, Volume2 } from "lucide-react";
 import { getDailyIdiom, getRandomIdiom, type Idiom } from "./lib/daily";
 import { formatFullDate, isToday, isYesterday, yesterday } from "./lib/dates";
-import { ACTION_LABELS, NAV_LABELS, SECTION_LABELS, type Lang } from "./lib/i18n";
+import { ACTION_LABELS, NAV_LABELS, SECTION_LABELS, TAGLINE, type Lang } from "./lib/i18n";
 import { pickBestChineseVoice } from "./lib/speech";
 import { useBookmarks } from "./hooks/useBookmarks";
 import { useTheme } from "./hooks/useTheme";
 import FlipDate from "./components/FlipDate";
+import SealLogo from "./components/SealLogo";
 import CalendarPanel from "./components/CalendarPanel";
 import BookmarksPanel from "./components/BookmarksPanel";
 import Drawer from "./components/Drawer";
@@ -164,10 +165,12 @@ function App() {
       />
 
       <div className="flex-shrink-0 mt-12">
-        <h1 className="text-5xl font-extrabold tracking-tight" style={{ color: "var(--color-accent)" }}>4Yu</h1>
-        <p className="text-lg mt-1" style={{ color: "var(--color-muted)" }}>一日一语</p>
+        <div className="flex items-center justify-center gap-4">
+          <SealLogo />
+          <h1 className="whitespace-nowrap text-4xl font-extrabold tracking-tight sm:text-5xl" style={{ color: "var(--color-accent)" }}>{TAGLINE[lang]}</h1>
+        </div>
 
-        <div className="mt-6">
+        <div className="mt-10">
           <FlipDate date={displayDate} lang={lang} />
         </div>
       </div>

@@ -8,6 +8,12 @@ export const LANG_LABELS: Record<Lang, string> = {
   "zh-Hant": "繁體",
 };
 
+export const TAGLINE: Trilingual = {
+  en: "Daily Chengyu",
+  "zh-Hans": "每日一成语",
+  "zh-Hant": "每日一成語",
+};
+
 export const NAV_LABELS = {
   yesterday: {
     en: "View Yesterday",

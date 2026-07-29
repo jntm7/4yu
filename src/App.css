@@ -1,3 +1,58 @@
+.seal-logo {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  width: 68px;
+  height: 68px;
+  padding: 7px;
+  background: var(--color-seal);
+  border-radius: 9px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  transform: rotate(-2deg);
+}
+
+.seal-logo::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1.5px solid var(--color-seal-text);
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.seal-logo::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - 0.5px),
+      var(--color-seal-grid) calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom,
+      transparent calc(50% - 0.5px),
+      var(--color-seal-grid) calc(50% + 0.5px)
+    );
+  pointer-events: none;
+}
+
+.seal-logo span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-seal-text);
+}
+
+.seal-logo span:nth-child(n + 3) {
+  font-size: 18px;
+}
+
 .idiom-char:hover .idiom-char-hanzi {
   color: var(--color-accent) !important;
 }
