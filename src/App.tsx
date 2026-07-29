@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Bookmark, Calendar, Copy, Shuffle, Volume2 } from "lucide-react";
+import { ArrowRight, Bookmark, Calendar, Copy, Shuffle, Volume2 } from "lucide-react";
 import { getDailyIdiom, getRandomIdiom, type Idiom } from "./lib/daily";
-import { formatFullDate, isToday, isYesterday, yesterday } from "./lib/dates";
+import { formatFullDate, isToday, isYesterday } from "./lib/dates";
 import { ACTION_LABELS, NAV_LABELS, SECTION_LABELS, TAGLINE, type Lang } from "./lib/i18n";
 import { pickBestChineseVoice } from "./lib/speech";
 import { useBookmarks } from "./hooks/useBookmarks";
@@ -198,20 +198,12 @@ function App() {
                 {NAV_LABELS.bookmarks[lang]}
               </button>
             </div>
-            {isTodayView ? (
+            {!isTodayView && (
               <button
-                className="nav-btn nav-btn-wide"
-                onClick={() => setView({ kind: "date", date: yesterday() })}
-              >
-                <ArrowLeft size={16} strokeWidth={2.25} aria-hidden="true" />
-                {NAV_LABELS.yesterday[lang]}
-              </button>
-            ) : (
-              <button
-                className="nav-btn nav-btn-wide"
+                className="nav-btn"
                 onClick={() => setView({ kind: "today" })}
               >
-                {NAV_LABELS.today[lang]}
+                {NAV_LABELS.backToToday[lang]}
                 <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
               </button>
             )}

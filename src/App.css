@@ -59,7 +59,7 @@
 
 .idiom-row {
   display: grid;
-  grid-template-columns: 108px 1fr 108px;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 12px;
 }
@@ -72,14 +72,6 @@
   gap: 12px;
   margin-top: 4px;
   width: 60px;
-}
-
-.idiom-audio-stack {
-  justify-self: start;
-}
-
-.idiom-copy-stack {
-  justify-self: end;
 }
 
 .idiom-audio-label {
@@ -269,10 +261,6 @@
 
 .nav-btn:hover {
   opacity: 0.9;
-}
-
-.nav-btn-wide {
-  min-width: 190px;
 }
 
 .nav-btn-active {
@@ -511,16 +499,24 @@ button.panel-row:hover {
     justify-content: center;
   }
 
-  .idiom-audio-stack {
-    order: 1;
+  .idiom-audio-stack,
+  .idiom-copy-stack {
+    flex-direction: row;
+    gap: 10px;
     width: auto;
     margin-top: 0;
   }
 
+  .idiom-audio-stack {
+    order: 1;
+  }
+
   .idiom-copy-stack {
     order: 2;
-    width: auto;
-    margin-top: 0;
+  }
+
+  .idiom-audio-label {
+    display: none;
   }
 
   .idiom-audio-btn {

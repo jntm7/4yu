@@ -15,16 +15,7 @@ export const TAGLINE: Trilingual = {
 };
 
 export const NAV_LABELS = {
-  yesterday: {
-    en: "View Yesterday",
-    "zh-Hans": "查看昨天的成语",
-    "zh-Hant": "查看昨天的成語",
-  },
-  today: {
-    en: "View Today",
-    "zh-Hans": "查看今天的成语",
-    "zh-Hant": "查看今天的成語",
-  },
+  backToToday: { en: "Today", "zh-Hans": "今天", "zh-Hant": "今天" },
   random: { en: "Random", "zh-Hans": "随机", "zh-Hant": "隨機" },
   browse: { en: "Browse", "zh-Hans": "浏览", "zh-Hant": "瀏覽" },
   bookmarks: { en: "Bookmarks", "zh-Hans": "书签", "zh-Hant": "書籤" },
