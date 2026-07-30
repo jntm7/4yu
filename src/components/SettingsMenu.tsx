@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Settings } from "lucide-react";
-import { LANG_LABELS, SETTINGS_LABELS, type Lang } from "../lib/i18n";
+import { SETTINGS_LABELS, type Lang } from "../lib/i18n";
 import type { Theme } from "../hooks/useTheme";
 
 interface SettingsMenuProps {
   lang: Lang;
-  onLangChange: (lang: Lang) => void;
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
 }
@@ -14,7 +13,6 @@ const THEME_OPTIONS: Theme[] = ["light", "dark", "system"];
 
 export default function SettingsMenu({
   lang,
-  onLangChange,
   theme,
   onThemeChange,
 }: SettingsMenuProps) {
@@ -71,20 +69,6 @@ export default function SettingsMenu({
           role="dialog"
           aria-label={SETTINGS_LABELS.settings[lang]}
         >
-          <div>
-            <p className="settings-section-title">{SETTINGS_LABELS.language[lang]}</p>
-            <div className="settings-seg">
-              {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
-                <button
-                  key={l}
-                  className={`settings-seg-btn ${lang === l ? "settings-seg-active" : ""}`}
-                  onClick={() => onLangChange(l)}
-                >
-                  {LANG_LABELS[l]}
-                </button>
-              ))}
-            </div>
-          </div>
           <div>
             <p className="settings-section-title">{SETTINGS_LABELS.theme[lang]}</p>
             <div className="settings-seg">

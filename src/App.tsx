@@ -11,6 +11,7 @@ import SealLogo from "./components/SealLogo";
 import CalendarPanel from "./components/CalendarPanel";
 import BookmarksPanel from "./components/BookmarksPanel";
 import Drawer from "./components/Drawer";
+import LanguageToggle from "./components/LanguageToggle";
 import SettingsMenu from "./components/SettingsMenu";
 import "./App.css";
 
@@ -159,7 +160,6 @@ function App() {
     <main className="flex min-h-screen flex-col items-center p-8 text-center">
       <SettingsMenu
         lang={lang}
-        onLangChange={setLang}
         theme={theme}
         onThemeChange={setTheme}
       />
@@ -278,6 +278,9 @@ function App() {
             </div>
           </div>
 
+          <div className="mt-4 flex justify-start">
+            <LanguageToggle lang={lang} onChange={setLang} />
+          </div>
         </div>
       </div>
 
