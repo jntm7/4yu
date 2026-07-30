@@ -50,7 +50,7 @@ export default function SettingsMenu({
   }, [open]);
 
   return (
-    <>
+    <div className="settings-root">
       <button
         ref={buttonRef}
         className="settings-btn"
@@ -85,6 +85,6 @@ export default function SettingsMenu({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
