@@ -1,116 +1,52 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Copy, Volume2 } from "lucide-react";
-import { getDailyIdiom } from "./lib/daily";
-import "./App.css";
+import { ArrowRight, Bookmark, Calendar, Copy, Shuffle, Volume2 } from "lucide-react";
+import { getDailyIdiom, getRandomIdiom, type Idiom } from "./lib/daily";
+import { formatFullDate, isToday, isYesterday } from "./lib/dates";
+import { ACTION_LABELS, NAV_LABELS, SECTION_LABELS, TAGLINE, type Lang } from "./lib/i18n";
+import { pickBestChineseVoice } from "./lib/speech";
+import { useBookmarks } from "./hooks/useBookmarks";
+import { useTheme } from "./hooks/useTheme";
 import FlipDate from "./components/FlipDate";
+import SealLogo from "./components/SealLogo";
+import CalendarPanel from "./components/CalendarPanel";
+import BookmarksPanel from "./components/BookmarksPanel";
+import Drawer from "./components/Drawer";
+import SettingsMenu from "./components/SettingsMenu";
+import "./App.css";
 
-type Lang = "en" | "zh-Hans" | "zh-Hant";
+type View =
+  | { kind: "today" }
+  | { kind: "date"; date: Date }
+  | { kind: "idiom"; idiom: Idiom; source: "shuffle" | "bookmark" };
 
-const LANG_LABELS: Record<Lang, string> = {
-  en: "EN",
-  "zh-Hans": "简体",
-  "zh-Hant": "繁體",
-};
-
-const NAV_LABELS: Record<"yesterday" | "today", Record<Lang, string>> = {
-  yesterday: {
-    en: "View Yesterday",
-    "zh-Hans": "查看昨天的成语",
-    "zh-Hant": "查看昨天的成語",
-  },
-  today: {
-    en: "View Today",
-    "zh-Hans": "查看今天的成语",
-    "zh-Hant": "查看今天的成語",
-  },
-};
-
-const SECTION_LABELS: Record<string, Record<Lang, string>> = {
-  today: { en: "Today's Chengyu", "zh-Hans": "今天的成语", "zh-Hant": "今天的成語" },
-  yesterday: { en: "Yesterday's Chengyu", "zh-Hans": "昨天的成语", "zh-Hant": "昨天的成語" },
-  definition: { en: "Definition", "zh-Hans": "释义", "zh-Hant": "釋義" },
-  origin: { en: "Origin", "zh-Hans": "出处", "zh-Hant": "出處" },
-  example: { en: "Example", "zh-Hans": "例句", "zh-Hant": "例句" },
-};
-
-const PRONUNCIATION_LABELS: Record<Lang, string> = {
-  en: "Play pronunciation",
-  "zh-Hans": "播放发音",
-  "zh-Hant": "播放發音",
-};
-
-const AUDIO_TAG_LABELS: Record<Lang, string> = {
-  en: "Audio",
-  "zh-Hans": "语音",
-  "zh-Hant": "語音",
-};
-
-const COPY_LABELS: Record<Lang, string> = {
-  en: "Copy Idiom",
-  "zh-Hans": "复制成语",
-  "zh-Hant": "複製成語",
-};
-
-const COPY_TAG_LABELS: Record<Lang, string> = {
-  en: "Copy",
-  "zh-Hans": "复制",
-  "zh-Hant": "複製",
-};
-
-const COPIED_TAG_LABELS: Record<Lang, string> = {
-  en: "Copied!",
-  "zh-Hans": "已复制!",
-  "zh-Hant": "已複製!",
-};
-
-function pickBestChineseVoice(
-  voices: SpeechSynthesisVoice[],
-): SpeechSynthesisVoice | undefined {
-  const preferredLangs = ["zh-CN", "zh-SG", "zh-TW", "zh-HK", "zh"];
-  const preferredNamePatterns = [
-    /mandarin/i,
-    /putonghua/i,
-    /xiaoxiao/i,
-    /yunxi/i,
-    /tingting/i,
-    /hanhan/i,
-    /mei-jia/i,
-    /zh[-_]?cn/i,
-    /zh[-_]?tw/i,
-  ];
-
-  const normalize = (value: string) => value.toLowerCase();
-
-  for (const code of preferredLangs) {
-    const exact = voices.find((voice) => normalize(voice.lang) === code.toLowerCase());
-    if (exact) {
-      return exact;
-    }
-  }
-
-  const chineseVoices = voices.filter((voice) => normalize(voice.lang).startsWith("zh"));
-  const namedPreferred = chineseVoices.find((voice) =>
-    preferredNamePatterns.some((pattern) => pattern.test(voice.name)),
-  );
-  if (namedPreferred) {
-    return namedPreferred;
-  }
-
-  return chineseVoices[0];
-}
+type Panel = "none" | "calendar" | "bookmarks";
 
 function App() {
   const [lang, setLang] = useState<Lang>("zh-Hans");
-  const [showYesterday, setShowYesterday] = useState(false);
+  const [view, setView] = useState<View>({ kind: "today" });
+  const [panel, setPanel] = useState<Panel>("none");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const displayDate = new Date();
-  if (showYesterday) {
-    displayDate.setDate(displayDate.getDate() - 1);
-  }
-  const idiom = getDailyIdiom(displayDate);
-  const dayKey = showYesterday ? "yesterday" : "today";
+  const { bookmarks, isBookmarked, toggle: toggleBookmark, remove: removeBookmark } =
+    useBookmarks();
+  const { theme, setTheme } = useTheme();
+
+  const isTodayView = view.kind !== "idiom" && (view.kind === "today" || isToday(view.date));
+  const displayDate = view.kind === "date" ? view.date : new Date();
+  const idiom = view.kind === "idiom" ? view.idiom : getDailyIdiom(displayDate);
+  const bookmarked = isBookmarked(idiom.word);
+
+  const sectionTitle = (() => {
+    if (view.kind === "idiom") {
+      return view.source === "shuffle"
+        ? SECTION_LABELS.random[lang]
+        : SECTION_LABELS.bookmark[lang];
+    }
+    if (view.kind === "today" || isToday(view.date)) return SECTION_LABELS.today[lang];
+    if (isYesterday(view.date)) return SECTION_LABELS.yesterday[lang];
+    return formatFullDate(view.date, lang);
+  })();
 
   const getExplanation = () => {
     if (lang === "en") return idiom.explanationEn;
@@ -157,10 +93,14 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
+  // Reset transient action state when the displayed idiom changes (render-time
+  // adjustment, see https://react.dev/learn/you-might-not-need-an-effect).
+  const [lastWord, setLastWord] = useState(displayWord);
+  if (lastWord !== displayWord) {
+    setLastWord(displayWord);
     setIsSpeaking(false);
     setIsCopied(false);
-  }, [displayWord]);
+  }
 
   useEffect(() => {
     if (!isCopied) {
@@ -203,66 +143,83 @@ function App() {
     }
   };
 
+  const handleShuffle = () => {
+    setView((v) => ({
+      kind: "idiom",
+      idiom: getRandomIdiom(v.kind === "idiom" ? v.idiom.word : undefined),
+      source: "shuffle",
+    }));
+  };
+
+  const togglePanel = (target: Panel) => {
+    setPanel((prev) => (prev === target ? "none" : target));
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center p-8 text-center">
-      <div className="flex-shrink-0 mt-12">
-        <h1 className="text-5xl font-extrabold tracking-tight" style={{ color: "var(--color-accent)" }}>4Yu</h1>
-        <p className="text-lg mt-1" style={{ color: "var(--color-muted)" }}>一日一语</p>
+      <SettingsMenu
+        lang={lang}
+        onLangChange={setLang}
+        theme={theme}
+        onThemeChange={setTheme}
+      />
 
-        <div className="mt-6">
-          <FlipDate date={displayDate} lang={lang} />
+      <div className="flex-shrink-0 mt-12">
+        <div className="flex items-center justify-center gap-4">
+          <SealLogo />
+          <h1 className="whitespace-nowrap text-4xl font-extrabold tracking-tight sm:text-5xl" style={{ color: "var(--color-accent)" }}>{TAGLINE[lang]}</h1>
         </div>
 
-        <div className="my-8">
-          <div className="lang-toggle">
-            {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
-              <button
-                key={l}
-                className={`lang-toggle-btn ${lang === l ? "lang-toggle-active" : ""}`}
-                onClick={() => setLang(l)}
-              >
-                {LANG_LABELS[l]}
-              </button>
-            ))}
-          </div>
+        <div className="mt-10">
+          <FlipDate date={displayDate} lang={lang} />
         </div>
       </div>
 
       <div className="flex items-center justify-center w-full py-6">
         <div className="w-full max-w-xl">
-          <div className={`mb-3 flex ${showYesterday ? "justify-end" : "justify-start"}`}>
-            {!showYesterday ? (
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-2 sm:justify-between">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <button
-                className="inline-flex min-w-[190px] items-center justify-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition-colors duration-200 hover:opacity-90"
-                style={{ borderColor: "var(--color-accent)", color: "var(--color-accent)", backgroundColor: "var(--color-card)" }}
-                onClick={() => setShowYesterday(true)}
+                className={`nav-btn ${panel === "calendar" ? "nav-btn-active" : ""}`}
+                onClick={() => togglePanel("calendar")}
               >
-                <ArrowLeft size={16} strokeWidth={2.25} aria-hidden="true" />
-                {NAV_LABELS.yesterday[lang]}
+                <Calendar size={16} strokeWidth={2.25} aria-hidden="true" />
+                {NAV_LABELS.browse[lang]}
               </button>
-            ) : (
+              <button className="nav-btn" onClick={handleShuffle}>
+                <Shuffle size={16} strokeWidth={2.25} aria-hidden="true" />
+                {NAV_LABELS.random[lang]}
+              </button>
               <button
-                className="inline-flex min-w-[190px] items-center justify-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition-colors duration-200 hover:opacity-90"
-                style={{ borderColor: "var(--color-accent)", color: "var(--color-accent)", backgroundColor: "var(--color-card)" }}
-                onClick={() => setShowYesterday(false)}
+                className={`nav-btn ${panel === "bookmarks" ? "nav-btn-active" : ""}`}
+                onClick={() => togglePanel("bookmarks")}
               >
-                {NAV_LABELS.today[lang]}
+                <Bookmark size={16} strokeWidth={2.25} aria-hidden="true" />
+                {NAV_LABELS.bookmarks[lang]}
+              </button>
+            </div>
+            {!isTodayView && (
+              <button
+                className="nav-btn"
+                onClick={() => setView({ kind: "today" })}
+              >
+                {NAV_LABELS.backToToday[lang]}
                 <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
               </button>
             )}
           </div>
 
           <div className="rounded-2xl sm:p-10 p-6 text-left min-h-[420px] flex flex-col shadow-2xl border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-accent)" }}>
-            <p className="section-label text-center">{SECTION_LABELS[dayKey][lang]}</p>
+            <p className="section-label text-center">{sectionTitle}</p>
             <div className="mx-auto mt-2 mb-8 w-42 h-0.5 rounded" style={{ backgroundColor: "var(--color-accent)" }} />
             <div className="idiom-row mb-8">
               <div className="idiom-audio-stack">
-                <span className="idiom-audio-label">{AUDIO_TAG_LABELS[lang]}</span>
+                <span className="idiom-audio-label">{ACTION_LABELS.audio[lang]}</span>
                 <button
                   className={`idiom-audio-btn ${isSpeaking ? "idiom-audio-btn-speaking" : ""}`}
                   onClick={handlePlayPronunciation}
-                  aria-label={PRONUNCIATION_LABELS[lang]}
-                  title={PRONUNCIATION_LABELS[lang]}
+                  aria-label={ACTION_LABELS.playPronunciation[lang]}
+                  title={ACTION_LABELS.playPronunciation[lang]}
                 >
                   <Volume2 size={16} strokeWidth={2.25} aria-hidden="true" />
                 </button>
@@ -279,14 +236,24 @@ function App() {
                 })}
               </div>
               <div className="idiom-copy-stack">
-                <span className="idiom-audio-label">{isCopied ? COPIED_TAG_LABELS[lang] : COPY_TAG_LABELS[lang]}</span>
+                <span className="idiom-audio-label">{isCopied ? ACTION_LABELS.copied[lang] : ACTION_LABELS.copy[lang]}</span>
                 <button
                   className={`idiom-audio-btn ${isCopied ? "idiom-audio-btn-speaking" : ""}`}
                   onClick={handleCopyIdiom}
-                  aria-label={COPY_LABELS[lang]}
-                  title={COPY_LABELS[lang]}
+                  aria-label={ACTION_LABELS.copyIdiom[lang]}
+                  title={ACTION_LABELS.copyIdiom[lang]}
                 >
                   <Copy size={16} strokeWidth={2.25} aria-hidden="true" />
+                </button>
+                <span className="idiom-audio-label">{bookmarked ? ACTION_LABELS.saved[lang] : ACTION_LABELS.save[lang]}</span>
+                <button
+                  className={`idiom-audio-btn ${bookmarked ? "idiom-audio-btn-speaking" : ""}`}
+                  onClick={() => toggleBookmark(idiom.word)}
+                  aria-label={ACTION_LABELS.saveIdiom[lang]}
+                  title={ACTION_LABELS.saveIdiom[lang]}
+                  aria-pressed={bookmarked}
+                >
+                  <Bookmark size={16} strokeWidth={2.25} fill={bookmarked ? "currentColor" : "none"} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -310,8 +277,42 @@ function App() {
               )}
             </div>
           </div>
+
         </div>
       </div>
+
+      <Drawer
+        open={panel === "calendar"}
+        title={NAV_LABELS.browse[lang]}
+        lang={lang}
+        onClose={() => setPanel("none")}
+      >
+        <CalendarPanel
+          lang={lang}
+          selectedDate={view.kind === "date" ? view.date : new Date()}
+          onSelect={(date) => {
+            setView({ kind: "date", date });
+            setPanel("none");
+          }}
+        />
+      </Drawer>
+
+      <Drawer
+        open={panel === "bookmarks"}
+        title={NAV_LABELS.bookmarks[lang]}
+        lang={lang}
+        onClose={() => setPanel("none")}
+      >
+        <BookmarksPanel
+          lang={lang}
+          bookmarks={bookmarks}
+          onSelect={(selected) => {
+            setView({ kind: "idiom", idiom: selected, source: "bookmark" });
+            setPanel("none");
+          }}
+          onRemove={removeBookmark}
+        />
+      </Drawer>
 
       <div className="flex-grow flex-shrink-0 pb-8">
         <p className="text-xs" style={{ color: "var(--color-dim)" }}>Created with ♡ by jntm7</p>

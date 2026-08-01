@@ -4,7 +4,6 @@ export type Idiom = {
   word: string;
   wordTraditional: string;
   pinyin: string;
-  abbreviation: string;
   explanation: string;
   explanationTraditional: string;
   explanationEn: string;
@@ -14,7 +13,6 @@ export type Idiom = {
   example: string;
   exampleTraditional: string;
   exampleEn: string | null;
-  frequency: number;
 };
 
 export function getDailyIdiom(date?: Date): Idiom {
@@ -35,9 +33,21 @@ export function searchIdioms(query: string): Idiom[] {
     (i) =>
       i.word.includes(query) ||
       i.pinyin.toLowerCase().includes(q) ||
-      i.abbreviation.toLowerCase().includes(q) ||
       i.explanation.includes(query),
   );
+}
+
+export function getRandomIdiom(excludeWord?: string): Idiom {
+  const pool = idioms as Idiom[];
+  let candidate = pool[Math.floor(Math.random() * pool.length)];
+  while (excludeWord && candidate.word === excludeWord) {
+    candidate = pool[Math.floor(Math.random() * pool.length)];
+  }
+  return candidate;
+}
+
+export function getIdiomByWord(word: string): Idiom | undefined {
+  return (idioms as Idiom[]).find((i) => i.word === word);
 }
 
 export function getTotalIdioms(): number {

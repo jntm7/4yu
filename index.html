@@ -4,7 +4,26 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>4Yu: 一日一语</title>
+    <title>4Yu: Daily Chengyu</title>
+    <script>
+      (function () {
+        var theme = "system";
+        try {
+          var stored = localStorage.getItem("4yu:theme");
+          if (stored === "light" || stored === "dark" || stored === "system") {
+            theme = stored;
+          }
+        } catch (e) {}
+        var resolved =
+          theme === "system"
+            ? window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark"
+            : theme;
+        document.documentElement.dataset.theme = resolved;
+        document.documentElement.style.colorScheme = resolved;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
