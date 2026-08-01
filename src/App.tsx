@@ -11,6 +11,7 @@ import SealLogo from "./components/SealLogo";
 import CalendarPanel from "./components/CalendarPanel";
 import BookmarksPanel from "./components/BookmarksPanel";
 import Drawer from "./components/Drawer";
+import LanguageToggle from "./components/LanguageToggle";
 import SettingsMenu from "./components/SettingsMenu";
 import "./App.css";
 
@@ -157,13 +158,6 @@ function App() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8 text-center">
-      <SettingsMenu
-        lang={lang}
-        onLangChange={setLang}
-        theme={theme}
-        onThemeChange={setTheme}
-      />
-
       <div className="flex-shrink-0 mt-12">
         <div className="flex items-center justify-center gap-4">
           <SealLogo />
@@ -182,31 +176,45 @@ function App() {
               <button
                 className={`nav-btn ${panel === "calendar" ? "nav-btn-active" : ""}`}
                 onClick={() => togglePanel("calendar")}
+                aria-label={NAV_LABELS.browse[lang]}
               >
                 <Calendar size={16} strokeWidth={2.25} aria-hidden="true" />
-                {NAV_LABELS.browse[lang]}
+                <span className="nav-label">{NAV_LABELS.browse[lang]}</span>
               </button>
-              <button className="nav-btn" onClick={handleShuffle}>
+              <button
+                className="nav-btn"
+                onClick={handleShuffle}
+                aria-label={NAV_LABELS.random[lang]}
+              >
                 <Shuffle size={16} strokeWidth={2.25} aria-hidden="true" />
-                {NAV_LABELS.random[lang]}
+                <span className="nav-label">{NAV_LABELS.random[lang]}</span>
               </button>
               <button
                 className={`nav-btn ${panel === "bookmarks" ? "nav-btn-active" : ""}`}
                 onClick={() => togglePanel("bookmarks")}
+                aria-label={NAV_LABELS.bookmarks[lang]}
               >
                 <Bookmark size={16} strokeWidth={2.25} aria-hidden="true" />
-                {NAV_LABELS.bookmarks[lang]}
+                <span className="nav-label">{NAV_LABELS.bookmarks[lang]}</span>
               </button>
             </div>
-            {!isTodayView && (
-              <button
-                className="nav-btn"
-                onClick={() => setView({ kind: "today" })}
-              >
-                {NAV_LABELS.backToToday[lang]}
-                <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
-              </button>
-            )}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {!isTodayView && (
+                <button
+                  className="nav-btn"
+                  onClick={() => setView({ kind: "today" })}
+                  aria-label={NAV_LABELS.backToToday[lang]}
+                >
+                  <span className="nav-label">{NAV_LABELS.backToToday[lang]}</span>
+                  <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
+                </button>
+              )}
+              <SettingsMenu
+                lang={lang}
+                theme={theme}
+                onThemeChange={setTheme}
+              />
+            </div>
           </div>
 
           <div className="rounded-2xl sm:p-10 p-6 text-left min-h-[420px] flex flex-col shadow-2xl border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-accent)" }}>
@@ -278,6 +286,9 @@ function App() {
             </div>
           </div>
 
+          <div className="mt-4 flex justify-start">
+            <LanguageToggle lang={lang} onChange={setLang} />
+          </div>
         </div>
       </div>
 
