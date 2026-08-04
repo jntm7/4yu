@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Bookmark, Calendar, Copy, Shuffle, Volume2 } from "lucide-react";
 import { getDailyIdiom, getRandomIdiom, type Idiom } from "./lib/daily";
-import { formatFullDate, isToday, isYesterday } from "./lib/dates";
+import { formatFullDate, isToday } from "./lib/dates";
 import { ACTION_LABELS, NAV_LABELS, SECTION_LABELS, TAGLINE, type Lang } from "./lib/i18n";
 import { pickBestChineseVoice } from "./lib/speech";
 import { useBookmarks } from "./hooks/useBookmarks";
@@ -12,7 +12,7 @@ import CalendarPanel from "./components/CalendarPanel";
 import BookmarksPanel from "./components/BookmarksPanel";
 import Drawer from "./components/Drawer";
 import LanguageToggle from "./components/LanguageToggle";
-import SettingsMenu from "./components/SettingsMenu";
+import ThemeToggle from "./components/ThemeToggle";
 import "./App.css";
 
 type View =
@@ -21,12 +21,13 @@ type View =
   | { kind: "idiom"; idiom: Idiom; source: "shuffle" | "bookmark" };
 
 type Panel = "none" | "calendar" | "bookmarks";
+type Speaking = "none" | "all" | number;
 
 function App() {
   const [lang, setLang] = useState<Lang>("zh-Hans");
   const [view, setView] = useState<View>({ kind: "today" });
   const [panel, setPanel] = useState<Panel>("none");
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speaking, setSpeaking] = useState<Speaking>("none");
   const [isCopied, setIsCopied] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const { bookmarks, isBookmarked, toggle: toggleBookmark, remove: removeBookmark } =
@@ -45,7 +46,6 @@ function App() {
         : SECTION_LABELS.bookmark[lang];
     }
     if (view.kind === "today" || isToday(view.date)) return SECTION_LABELS.today[lang];
-    if (isYesterday(view.date)) return SECTION_LABELS.yesterday[lang];
     return formatFullDate(view.date, lang);
   })();
 
@@ -99,7 +99,7 @@ function App() {
   const [lastWord, setLastWord] = useState(displayWord);
   if (lastWord !== displayWord) {
     setLastWord(displayWord);
-    setIsSpeaking(false);
+    setSpeaking("none");
     setIsCopied(false);
   }
 
@@ -111,13 +111,13 @@ function App() {
     return () => window.clearTimeout(timeout);
   }, [isCopied]);
 
-  const handlePlayPronunciation = () => {
+  const speak = (text: string, onStart: () => void, onEnd: () => void) => {
     if (!("speechSynthesis" in window)) {
       return;
     }
 
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(displayWord);
+    const utterance = new SpeechSynthesisUtterance(text);
     const preferredVoice = pickBestChineseVoice(voices);
     if (preferredVoice) {
       utterance.voice = preferredVoice;
@@ -126,10 +126,18 @@ function App() {
       utterance.lang = "zh-CN";
     }
     utterance.rate = 0.85;
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onstart = onStart;
+    utterance.onend = onEnd;
+    utterance.onerror = onEnd;
     window.speechSynthesis.speak(utterance);
+  };
+
+  const handlePlayPronunciation = () => {
+    speak(displayWord, () => setSpeaking("all"), () => setSpeaking("none"));
+  };
+
+  const handlePlayChar = (index: number, char: string) => {
+    speak(char, () => setSpeaking(index), () => setSpeaking("none"));
   };
 
   const handleCopyIdiom = async () => {
@@ -182,14 +190,6 @@ function App() {
                 <span className="nav-label">{NAV_LABELS.browse[lang]}</span>
               </button>
               <button
-                className="nav-btn"
-                onClick={handleShuffle}
-                aria-label={NAV_LABELS.random[lang]}
-              >
-                <Shuffle size={16} strokeWidth={2.25} aria-hidden="true" />
-                <span className="nav-label">{NAV_LABELS.random[lang]}</span>
-              </button>
-              <button
                 className={`nav-btn ${panel === "bookmarks" ? "nav-btn-active" : ""}`}
                 onClick={() => togglePanel("bookmarks")}
                 aria-label={NAV_LABELS.bookmarks[lang]}
@@ -209,22 +209,35 @@ function App() {
                   <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
                 </button>
               )}
-              <SettingsMenu
-                lang={lang}
-                theme={theme}
-                onThemeChange={setTheme}
-              />
+              <button
+                className="nav-btn"
+                onClick={handleShuffle}
+                aria-label={NAV_LABELS.random[lang]}
+              >
+                <Shuffle size={16} strokeWidth={2.25} aria-hidden="true" />
+                <span className="nav-label">{NAV_LABELS.random[lang]}</span>
+              </button>
             </div>
           </div>
 
-          <div className="rounded-2xl sm:p-10 p-6 text-left min-h-[420px] flex flex-col shadow-2xl border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-accent)" }}>
+          <div className="relative rounded-2xl sm:p-10 p-6 text-left min-h-[420px] flex flex-col shadow-2xl border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-accent)" }}>
+            <button
+              className={`save-ribbon ${bookmarked ? "save-ribbon-active" : ""}`}
+              onClick={() => toggleBookmark(idiom.word)}
+              aria-label={bookmarked ? ACTION_LABELS.saved[lang] : ACTION_LABELS.saveIdiom[lang]}
+              title={bookmarked ? ACTION_LABELS.saved[lang] : ACTION_LABELS.saveIdiom[lang]}
+              aria-pressed={bookmarked}
+            >
+              <Bookmark size={20} strokeWidth={2.25} fill={bookmarked ? "currentColor" : "none"} aria-hidden="true" />
+              <span className="save-ribbon-label">{bookmarked ? ACTION_LABELS.saved[lang] : ACTION_LABELS.save[lang]}</span>
+            </button>
             <p className="section-label text-center">{sectionTitle}</p>
             <div className="mx-auto mt-2 mb-8 w-42 h-0.5 rounded" style={{ backgroundColor: "var(--color-accent)" }} />
             <div className="idiom-row mb-8">
               <div className="idiom-audio-stack">
                 <span className="idiom-audio-label">{ACTION_LABELS.audio[lang]}</span>
                 <button
-                  className={`idiom-audio-btn ${isSpeaking ? "idiom-audio-btn-speaking" : ""}`}
+                  className={`idiom-audio-btn ${speaking === "all" ? "idiom-audio-btn-speaking" : ""}`}
                   onClick={handlePlayPronunciation}
                   aria-label={ACTION_LABELS.playPronunciation[lang]}
                   title={ACTION_LABELS.playPronunciation[lang]}
@@ -236,10 +249,16 @@ function App() {
                 {displayWord.split("").map((char, i) => {
                   const syllable = idiom.pinyin.split(/\s+/)[i] ?? "";
                   return (
-                    <span key={i} className="idiom-char flex flex-col items-center gap-1">
-                      <span className="idiom-char-hanzi text-6xl leading-none transition-colors duration-200 cursor-default" style={{ color: "var(--color-text)" }}>{char}</span>
+                    <button
+                      key={i}
+                      className={`idiom-char flex flex-col items-center gap-1 ${speaking === i ? "idiom-char-speaking" : ""}`}
+                      onClick={() => handlePlayChar(i, char)}
+                      aria-label={ACTION_LABELS.playPronunciation[lang]}
+                      title={ACTION_LABELS.playPronunciation[lang]}
+                    >
+                      <span className="idiom-char-hanzi text-6xl leading-none transition-colors duration-200" style={{ color: "var(--color-text)" }}>{char}</span>
                       <span className="idiom-char-pinyin text-base" style={{ color: "var(--color-muted)" }}>{syllable}</span>
-                    </span>
+                    </button>
                   );
                 })}
               </div>
@@ -252,16 +271,6 @@ function App() {
                   title={ACTION_LABELS.copyIdiom[lang]}
                 >
                   <Copy size={16} strokeWidth={2.25} aria-hidden="true" />
-                </button>
-                <span className="idiom-audio-label">{bookmarked ? ACTION_LABELS.saved[lang] : ACTION_LABELS.save[lang]}</span>
-                <button
-                  className={`idiom-audio-btn ${bookmarked ? "idiom-audio-btn-speaking" : ""}`}
-                  onClick={() => toggleBookmark(idiom.word)}
-                  aria-label={ACTION_LABELS.saveIdiom[lang]}
-                  title={ACTION_LABELS.saveIdiom[lang]}
-                  aria-pressed={bookmarked}
-                >
-                  <Bookmark size={16} strokeWidth={2.25} fill={bookmarked ? "currentColor" : "none"} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -286,8 +295,9 @@ function App() {
             </div>
           </div>
 
-          <div className="mt-4 flex justify-start">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
             <LanguageToggle lang={lang} onChange={setLang} />
+            <ThemeToggle lang={lang} theme={theme} onChange={setTheme} />
           </div>
         </div>
       </div>

@@ -23,7 +23,6 @@ export const NAV_LABELS = {
 
 export const SECTION_LABELS = {
   today: { en: "Today's Chengyu", "zh-Hans": "今天的成语", "zh-Hant": "今天的成語" },
-  yesterday: { en: "Yesterday's Chengyu", "zh-Hans": "昨天的成语", "zh-Hant": "昨天的成語" },
   random: { en: "Random Chengyu", "zh-Hans": "随机成语", "zh-Hant": "隨機成語" },
   bookmark: { en: "Bookmarked Chengyu", "zh-Hans": "收藏的成语", "zh-Hant": "收藏的成語" },
   definition: { en: "Definition", "zh-Hans": "释义", "zh-Hant": "釋義" },
@@ -52,12 +51,11 @@ export const PANEL_LABELS = {
 } satisfies Record<string, Trilingual>;
 
 export const SETTINGS_LABELS = {
-  settings: { en: "Settings", "zh-Hans": "设置", "zh-Hant": "設定" },
   language: { en: "Language", "zh-Hans": "语言", "zh-Hant": "語言" },
   theme: { en: "Theme", "zh-Hans": "主题", "zh-Hant": "主題" },
   light: { en: "Light", "zh-Hans": "浅色", "zh-Hant": "淺色" },
   dark: { en: "Dark", "zh-Hans": "深色", "zh-Hant": "深色" },
-  system: { en: "System", "zh-Hans": "跟随系统", "zh-Hant": "跟隨系統" },
+  system: { en: "System", "zh-Hans": "系统", "zh-Hant": "系統" },
   close: { en: "Close", "zh-Hans": "关闭", "zh-Hant": "關閉" },
 } satisfies Record<string, Trilingual>;
 
