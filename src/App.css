@@ -53,7 +53,24 @@
   font-size: 18px;
 }
 
+.idiom-char {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
 .idiom-char:hover .idiom-char-hanzi {
+  color: var(--color-accent) !important;
+}
+
+.idiom-char:active {
+  opacity: 0.75;
+}
+
+.idiom-char-speaking .idiom-char-hanzi {
   color: var(--color-accent) !important;
 }
 
@@ -117,88 +134,43 @@
   color: var(--color-accent);
 }
 
-.settings-root {
-  position: relative;
-}
-
-.settings-btn {
-  width: 38px;
-  height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 1px solid var(--color-accent);
-  background: var(--color-card);
-  color: var(--color-accent);
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.settings-btn:hover {
-  opacity: 0.9;
-}
-
-.settings-menu {
+.save-ribbon {
   position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 70;
-  width: 260px;
+  top: -1px;
+  right: 22px;
+  width: 54px;
+  height: 82px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid var(--color-accent);
-  background: var(--color-card);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  text-align: left;
-}
-
-.settings-section-title {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--color-dim);
-  margin-bottom: 8px;
-}
-
-.settings-seg {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 4px;
-  border-radius: 10px;
-  border: 1px solid var(--color-border-soft);
-  background: var(--color-card);
-}
-
-.settings-seg-btn {
-  flex: 1;
-  padding: 7px 8px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--color-dim);
-  font-size: 0.85rem;
-  font-family: inherit;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.settings-seg-btn:hover {
-  color: var(--color-muted);
-}
-
-.settings-seg-active {
-  background: var(--color-bg);
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--color-accent-soft);
   color: var(--color-accent);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), 50% 100%, 0 calc(100% - 14px));
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.lang-seg {
+.save-ribbon-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.save-ribbon:hover {
+  background: var(--color-accent);
+  color: var(--color-card);
+}
+
+.save-ribbon-active,
+.save-ribbon-active:hover {
+  background: var(--color-accent);
+  color: var(--color-card);
+}
+
+.seg-control {
   display: inline-flex;
   gap: 2px;
   padding: 3px;
@@ -207,7 +179,7 @@
   background: var(--color-card);
 }
 
-.lang-seg-btn {
+.seg-btn {
   padding: 5px 12px;
   border: none;
   border-radius: 9999px;
@@ -222,16 +194,16 @@
   transition: all 0.2s ease;
 }
 
-.lang-seg-btn:hover {
+.seg-btn:hover {
   color: var(--color-accent);
 }
 
-.lang-seg-btn:focus-visible {
+.seg-btn:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
 }
 
-.lang-seg-active {
+.seg-active {
   background: var(--color-accent-soft);
   color: var(--color-accent);
 }
@@ -274,6 +246,7 @@
 
 .flip-countdown {
   margin-top: 12px;
+  padding-bottom: 16px;
   font-family: "SF Mono", "Fira Code", "Cascadia Code", "JetBrains Mono", ui-monospace, monospace;
   font-size: 12px;
   color: var(--color-accent);
@@ -284,7 +257,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 9999px;
+  border-radius: 9px;
   border: 1px solid var(--color-accent);
   padding: 8px 18px;
   font-size: 0.875rem;

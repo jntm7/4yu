@@ -7,11 +7,11 @@ interface LanguageToggleProps {
 
 export default function LanguageToggle({ lang, onChange }: LanguageToggleProps) {
   return (
-    <div className="lang-seg" role="group" aria-label={SETTINGS_LABELS.language[lang]}>
+    <div className="seg-control" role="group" aria-label={SETTINGS_LABELS.language[lang]}>
       {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
         <button
           key={l}
-          className={`lang-seg-btn ${lang === l ? "lang-seg-active" : ""}`}
+          className={`seg-btn ${lang === l ? "seg-active" : ""}`}
           onClick={() => onChange(l)}
           aria-pressed={lang === l}
         >
